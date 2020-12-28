@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { HashRouter, Route, Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -26,6 +26,7 @@ import Container from "@material-ui/core/Container";
 import ClockPage from "./ClockPage";
 import TimerPage from "./TimerPage";
 import StopwatchPage from "./StopwatchPage";
+import myRoutes from "./myRoutes";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -47,10 +48,16 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+function getTabIndexByHash() {
+    return Object.values(myRoutes).indexOf(window.location.hash.slice(1));
+}
+
 function App() {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [bottomNavIndex, setBottomNavIndex] = React.useState(0);
+    const [bottomNavIndex, setBottomNavIndex] = React.useState(() => {
+        return getTabIndexByHash();
+    });
     const pageNames = ["Clock", "Timer", "Stopwatch"];
 
     const open = Boolean(anchorEl);
@@ -63,78 +70,101 @@ function App() {
         setAnchorEl(null);
     };
 
+    function hashChange() {
+        setBottomNavIndex(getTabIndexByHash());
+    }
+
+    useEffect(() => {
+        window.addEventListener("hashchange", hashChange);
+        return () => {
+            window.removeEventListener("hashchange", hashChange);
+        };
+    }, []);
+
     return (
-        <div className={classes.root}>
-            <AppBar
-                color="secondary"
-                elevation="0"
-                position="static"
-                className={classes.appbar}
-            >
-                <Toolbar>
-                    <Typography variant="h6" className={classes.title}>
-                        {pageNames[bottomNavIndex]}
-                    </Typography>
-                    <div>
-                        <IconButton
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleMenu}
-                            color="inherit"
-                        >
-                            <MoreVertIcon></MoreVertIcon>
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorEl}
-                            anchorOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                            }}
-                            open={open}
-                            onClose={handleClose}
-                        >
-                            <MenuItem onClick={handleClose}>
-                                Screensaver
-                            </MenuItem>
-                            <MenuItem onClick={handleClose}>Settings</MenuItem>
-                        </Menu>
-                    </div>
-                </Toolbar>
-            </AppBar>
-            <Container>
-                {
-                    [<ClockPage />, <TimerPage />, <StopwatchPage />][
-                        bottomNavIndex
-                    ]
-                }
-            </Container>
-            <BottomNavigation
-                value={bottomNavIndex}
-                onChange={(event, newValue) => setBottomNavIndex(newValue)}
-                showLabels
-                className={classes.stickToBottom}
-            >
-                <BottomNavigationAction
-                    label={pageNames[0]}
-                    icon={<AccessTimeOutlinedIcon />}
-                />
-                <BottomNavigationAction
-                    label={pageNames[1]}
-                    icon={<AvTimerOutlinedIcon />}
-                />
-                <BottomNavigationAction
-                    label={pageNames[2]}
-                    icon={<TimerOutlinedIcon />}
-                />
-            </BottomNavigation>
-        </div>
+        <HashRouter basename={myRoutes.clock}>
+            <div className={classes.root}>
+                <AppBar
+                    color="secondary"
+                    elevation="0"
+                    position="static"
+                    className={classes.appbar}
+                >
+                    <Toolbar>
+                        <Typography variant="h6" className={classes.title}>
+                            {pageNames[bottomNavIndex]}
+                        </Typography>
+                        <div>
+                            <IconButton
+                                aria-label="account of current user"
+                                aria-controls="menu-appbar"
+                                aria-haspopup="true"
+                                onClick={handleMenu}
+                                color="inherit"
+                            >
+                                <MoreVertIcon></MoreVertIcon>
+                            </IconButton>
+                            <Menu
+                                id="menu-appbar"
+                                anchorEl={anchorEl}
+                                anchorOrigin={{
+                                    vertical: "top",
+                                    horizontal: "right",
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: "top",
+                                    horizontal: "right",
+                                }}
+                                open={open}
+                                onClose={handleClose}
+                            >
+                                <MenuItem onClick={handleClose}>
+                                    Screensaver
+                                </MenuItem>
+                                <MenuItem onClick={handleClose}>
+                                    Settings
+                                </MenuItem>
+                            </Menu>
+                        </div>
+                    </Toolbar>
+                </AppBar>
+                <Container>
+                    <Route exact path={myRoutes.clock} component={ClockPage} />
+                    <Route exact path={myRoutes.timer} component={TimerPage} />
+                    <Route
+                        exact
+                        path={myRoutes.stopwatch}
+                        component={StopwatchPage}
+                    />
+                </Container>
+                <BottomNavigation
+                    value={bottomNavIndex}
+                    onChange={(event, newValue) => setBottomNavIndex(newValue)}
+                    showLabels
+                    className={classes.stickToBottom}
+                >
+                    <BottomNavigationAction
+                        component={Link}
+                        to={myRoutes.clock}
+                        label={pageNames[0]}
+                        icon={<AccessTimeOutlinedIcon />}
+                    />
+                    <BottomNavigationAction
+                        component={Link}
+                        to={myRoutes.timer}
+                        label={pageNames[1]}
+                        icon={<AvTimerOutlinedIcon />}
+                    />
+                    <BottomNavigationAction
+                        component={Link}
+                        to={myRoutes.stopwatch}
+                        label={pageNames[2]}
+                        icon={<TimerOutlinedIcon />}
+                    />
+                </BottomNavigation>
+            </div>
+        </HashRouter>
     );
 }
 
