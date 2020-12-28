@@ -125,6 +125,11 @@ function App() {
                                 <MenuItem onClick={handleClose}>
                                     Settings
                                 </MenuItem>
+                                <MenuItem
+                                    onClick={() => window.localStorage.clear()}
+                                >
+                                    Clear Storage
+                                </MenuItem>
                             </Menu>
                         </div>
                     </Toolbar>
