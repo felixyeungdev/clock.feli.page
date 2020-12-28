@@ -1,0 +1,9 @@
+{
+    "short_name": "Clock App",
+    "name": "Clone of Stock Android's Clock App",
+    "icons": [],
+    "start_url": ".",
+    "display": "standalone",
+    "theme_color": "#000000",
+    "background_color": "#ffffff"
+}
