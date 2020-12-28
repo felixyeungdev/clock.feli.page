@@ -11,7 +11,7 @@ import {
 } from "@material-ui/core/styles";
 
 const feliOrange = "#f9a825";
-const backgroundColor = "#1e1e1e";
+const backgroundColor = "#111111";
 
 const theme = createMuiTheme({
     palette: {
@@ -22,6 +22,7 @@ const theme = createMuiTheme({
         },
         background: {
             default: backgroundColor,
+            paper: "#1e1e1e",
         },
     },
 });

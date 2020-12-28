@@ -67,6 +67,7 @@ function App() {
         <div className={classes.root}>
             <AppBar
                 color="secondary"
+                elevation="0"
                 position="static"
                 className={classes.appbar}
             >
