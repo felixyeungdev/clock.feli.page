@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
+// import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItem from "@material-ui/core/ListItem";
@@ -14,6 +14,7 @@ import InputBase from "@material-ui/core/InputBase";
 import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import SearchIcon from "@material-ui/icons/Search";
 import ct from "countries-and-timezones";
 
 const useStyles = makeStyles((theme) => ({
@@ -35,6 +36,7 @@ export default function TimezoneSelect({ open, onClose }) {
 
     const [timezones, setTimezones] = useState(() => ct.getAllTimezones());
     const [listItems, setListItems] = useState(() => []);
+    const inputEl = useRef(null);
 
     const [input, setInput] = useState(() => "");
 
@@ -67,6 +69,13 @@ export default function TimezoneSelect({ open, onClose }) {
         );
     }, [input]);
 
+    function handleFocusOrClear(shouldFocus) {
+        if (!shouldFocus) {
+            setInput("");
+        }
+        inputEl.current.focus();
+    }
+
     return (
         <Dialog
             fullScreen
@@ -85,8 +94,10 @@ export default function TimezoneSelect({ open, onClose }) {
                         <ArrowBackIcon />
                     </IconButton>
                     <InputBase
+                        inputRef={inputEl}
                         value={input}
                         placeholder="Search..."
+                        autoFocus
                         style={{
                             paddingLeft: "16px",
                             width: "100%",
@@ -98,10 +109,10 @@ export default function TimezoneSelect({ open, onClose }) {
                     <IconButton
                         edge="start"
                         color="inherit"
-                        onClick={() => onClose()}
-                        aria-label="close"
+                        onClick={() => handleFocusOrClear(input == "")}
+                        aria-label={input == "" ? "search" : "clear"}
                     >
-                        <CloseIcon />
+                        {input == "" ? <SearchIcon /> : <CloseIcon />}
                     </IconButton>
                 </Toolbar>
             </AppBar>
