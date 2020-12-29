@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
     time: {
         letterSpacing: "5px",
         textAlign: "center",
+        fontSize: "3.5rem",
     },
     fab: {
         position: "fixed",
