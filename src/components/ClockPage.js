@@ -46,14 +46,14 @@ function ClockPage() {
         setShowTimezoneSelect(true);
     }
     function handleAddTimezone(timezone) {
-        console.log(`Select ${timezone}`);
         setShowTimezoneSelect(false);
-        setUserTimezones((old) => {
-            if (!old.includes(timezone)) {
-                return [...old, timezone];
-            }
-            return old;
-        });
+        timezone &&
+            setUserTimezones((old) => {
+                if (!old.includes(timezone)) {
+                    return [...old, timezone];
+                }
+                return old;
+            });
     }
 
     useEffect(() => {
