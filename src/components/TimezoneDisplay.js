@@ -60,7 +60,7 @@ function TimezoneDisplay({ timezone }) {
 
     return (
         <Grid container spacing={1} className={classes.marginVert}>
-            <Grid item xs={8}>
+            <Grid item xs={6}>
                 <Grid container>
                     <Grid item xs={12}>
                         <Typography variant="h6">{countryInfo.name}</Typography>
@@ -72,7 +72,7 @@ function TimezoneDisplay({ timezone }) {
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid item xs={4} style={{ textAlign: "end" }}>
+            <Grid item xs={6} style={{ textAlign: "end" }}>
                 <Typography variant="h3">{time}</Typography>
             </Grid>
         </Grid>
