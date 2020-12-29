@@ -126,7 +126,10 @@ function App() {
                                     Settings
                                 </MenuItem>
                                 <MenuItem
-                                    onClick={() => window.localStorage.clear()}
+                                    onClick={() => {
+                                        window.localStorage.clear();
+                                        window.location.reload(false);
+                                    }}
                                 >
                                     Clear Storage
                                 </MenuItem>
