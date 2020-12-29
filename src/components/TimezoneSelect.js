@@ -79,12 +79,13 @@ export default function TimezoneSelect({ open, onClose }) {
                     <IconButton
                         edge="start"
                         color="inherit"
-                        onClick={onClose}
+                        onClick={() => onClose()}
                         aria-label="close"
                     >
                         <ArrowBackIcon />
                     </IconButton>
                     <InputBase
+                        value={input}
                         placeholder="Search..."
                         style={{
                             paddingLeft: "16px",
@@ -97,7 +98,7 @@ export default function TimezoneSelect({ open, onClose }) {
                     <IconButton
                         edge="start"
                         color="inherit"
-                        onClick={onClose}
+                        onClick={() => onClose()}
                         aria-label="close"
                     >
                         <CloseIcon />
