@@ -62,7 +62,11 @@ export default function TimezoneSelect({ open, onClose }) {
                         key={timezone.name}
                         onClick={() => onClose(timezone.name)}
                     >
-                        <ListItemText primary={timezone.name} />
+                        <ListItemText
+                            primary={timezone.name
+                                .replaceAll("/", " - ")
+                                .replaceAll("_", " ")}
+                        />
                     </ListItem>
                 );
             })
