@@ -10,6 +10,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import TimezoneDisplay from "./TimezoneDisplay";
 import TimezoneSelect from "./TimezoneSelect";
 import useLocalStorage from "../hooks/useLocalStorage";
+import { Container as DraggableContainer, Draggable } from "react-smooth-dnd";
+import arrayMove from "array-move";
 
 const useStyles = makeStyles((theme) => ({
     time: {
@@ -56,6 +58,10 @@ function ClockPage() {
             });
     }
 
+    function onDrop({ removedIndex, addedIndex }) {
+        setUserTimezones((items) => arrayMove(items, removedIndex, addedIndex));
+    }
+
     useEffect(() => {
         var interval = setInterval(updateClock, 10);
         return () => clearInterval(interval);
@@ -79,13 +85,20 @@ function ClockPage() {
                 <Divider style={{ marginTop: "16px" }} />
             </Container>
             <Container>
-                {userTimezones.map((timezone) => {
-                    return <TimezoneDisplay timezone={timezone} />;
-                })}
-                {/* <TimezoneDisplay timezone="Asia/Hong_Kong" />
+                <DraggableContainer onDrop={onDrop}>
+                    {userTimezones.map((timezone) => {
+                        return (
+                            <Draggable key={timezone}>
+                                <TimezoneDisplay timezone={timezone} />
+                            </Draggable>
+                        );
+                    })}
+
+                    {/* <TimezoneDisplay timezone="Asia/Hong_Kong" />
                 <TimezoneDisplay timezone="Europe/London" />
                 <TimezoneDisplay timezone="Asia/Tokyo" />
                 <TimezoneDisplay timezone="Asia/Yangon" /> */}
+                </DraggableContainer>
             </Container>
             <Fab
                 color="primary"
