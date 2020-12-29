@@ -16,6 +16,7 @@ import arrayMove from "array-move";
 const useStyles = makeStyles((theme) => ({
     time: {
         letterSpacing: "5px",
+        textAlign: "center",
     },
     fab: {
         position: "fixed",
@@ -23,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
         bottom: "72px",
         left: "50%",
         zIndex: "50",
+    },
+    centerText: {
+        textAlign: "center",
     },
 }));
 
@@ -75,13 +79,15 @@ function ClockPage() {
         >
             <Container>
                 <Typography
-                    variant="h2"
+                    variant="h3"
                     color="primary"
                     className={classes.time}
                 >
                     {time}
                 </Typography>
-                <Typography variant="h5">{date}</Typography>
+                <Typography variant="h5" className={classes.centerText}>
+                    {date}
+                </Typography>
                 <Divider style={{ marginTop: "16px" }} />
             </Container>
             <Container>
