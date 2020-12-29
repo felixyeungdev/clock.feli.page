@@ -85,7 +85,7 @@ function ClockPage() {
                 <Divider style={{ marginTop: "16px" }} />
             </Container>
             <Container>
-                <DraggableContainer onDrop={onDrop}>
+                <DraggableContainer onDrop={onDrop} dragBeginDelay={200}>
                     {userTimezones.map((timezone) => {
                         return (
                             <Draggable key={timezone}>
