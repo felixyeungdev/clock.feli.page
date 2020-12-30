@@ -101,7 +101,7 @@ async function shareStopwatchResult(text) {
         try {
             await navigator.share({
                 title: "Stopwatch Result",
-                text: "",
+                text: `${text}\n`,
                 url: "https://clock.feli.page",
             });
         } catch (error) {
