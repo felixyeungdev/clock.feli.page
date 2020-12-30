@@ -155,18 +155,21 @@ function App() {
                     <BottomNavigationAction
                         component={Link}
                         to={myRoutes.clock}
+                        replace
                         label={pageNames[0]}
                         icon={<AccessTimeOutlinedIcon />}
                     />
                     <BottomNavigationAction
                         component={Link}
                         to={myRoutes.timer}
+                        replace
                         label={pageNames[1]}
                         icon={<AvTimerOutlinedIcon />}
                     />
                     <BottomNavigationAction
                         component={Link}
                         to={myRoutes.stopwatch}
+                        replace
                         label={pageNames[2]}
                         icon={<TimerOutlinedIcon />}
                     />
