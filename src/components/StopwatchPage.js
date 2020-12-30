@@ -183,8 +183,7 @@ const StopwatchPage = () => {
 
         const message = `My time is ${textTime}${lapMessage}`;
         const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
-        // window.open(url, "_blank");
-        console.log(message);
+        window.open(url, "_blank");
     }
 
     function lapStopwatch() {
