@@ -105,7 +105,6 @@ async function shareStopwatchResult(text) {
                 url: "https://clock.feli.page",
             });
         } catch (error) {
-            console.log(error.toString());
             if (!error.toString().includes("canceled")) {
                 shareWithWhatsApp();
             }
