@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
+import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
 import Fab from "@material-ui/core/Fab";
+import LinearProgress from "@material-ui/core/LinearProgress";
+import LapDisplay from "./LapDisplay";
 import PlayArrowOutlinedIcon from "@material-ui/icons/PlayArrowOutlined";
 import PauseOutlinedIcon from "@material-ui/icons/PauseOutlined";
 import { makeStyles } from "@material-ui/core/styles";
@@ -13,12 +16,24 @@ const useStyles = makeStyles((theme) => ({
     controls: {
         position: "fixed",
         transform: "TranslateX(-50%)",
-        bottom: "72px",
+        bottom: "56px",
         left: "50%",
         zIndex: "50",
+        paddingTop: "64px",
+        paddingBottom: "16px",
+        background:
+            "linear-gradient(0deg, rgba(17,17,17,1) 60%, rgba(17,17,17,0) 100%)",
     },
     flex: {
         display: "flex",
+    },
+    time: {
+        letterSpacing: "5px",
+        textAlign: "center",
+        fontSize: "3.5rem",
+    },
+    spacer: {
+        minHeight: "180px",
     },
 }));
 
@@ -27,7 +42,23 @@ const defaultStopwatchState = {
     paused: true,
 };
 
-const calculateDisplayTime = (state) => {
+export function generateTextTime([hours, minutes, seconds, milliseconds]) {
+    const _hours = `${hours < 10 ? "0" : ""}${hours}`;
+    const _minutes = `${minutes < 10 ? "0" : ""}${minutes}`;
+    const _seconds = `${seconds < 10 ? "0" : ""}${seconds}`;
+    const _milliseconds = `${milliseconds < 10 ? "0" : ""}${milliseconds}`;
+    var result = `${_hours}:${_minutes}:${_seconds}.${_milliseconds}`;
+    if (hours + minutes === 0) {
+        result = result.slice(6);
+    } else if (hours === 0) {
+        result = result.slice(3);
+    } else if (hours > 1) {
+        result = result.slice(0, 8);
+    }
+    return result;
+}
+
+export const calculateDisplayTime = (state) => {
     const timed =
         state.paused || !state.lastStarted
             ? state.timed
@@ -40,6 +71,23 @@ const calculateDisplayTime = (state) => {
     return [hours, minutes, seconds, milliseconds, timed];
 };
 
+function calculateLapData(laps = []) {
+    return laps
+        .map((lap, i, arr) => {
+            return {
+                lap: lap,
+                delta: i - 1 >= 0 ? lap - arr[i - 1] : lap,
+            };
+        })
+        .reverse();
+}
+
+function generateLapItems(lapData) {
+    return lapData.map((lap, i, arr) => {
+        return <LapDisplay index={arr.length - i} lap={lap} key={i} />;
+    });
+}
+
 const StopwatchPage = () => {
     const classes = useStyles();
 
@@ -51,20 +99,39 @@ const StopwatchPage = () => {
     const [displayTime, setDisplayTime] = useState(() => {
         return calculateDisplayTime(state);
     });
+
     const [hours, minutes, seconds, milliseconds, total] = displayTime;
+
+    const textTime = generateTextTime(displayTime);
     var [isZero, setIsZero] = useState(() => total === 0);
+    const [progress, setProgress] = useState(() => {
+        return Math.floor((seconds / 60) * 100);
+    });
+    const [lapData, setLapData] = useState(() => calculateLapData(state.laps));
+    const [lapItems, setLapItems] = useState(() => generateLapItems(lapData));
 
     useEffect(() => {
         var interval;
         if (!paused) {
             interval = setInterval(() => {
                 setDisplayTime(calculateDisplayTime(state));
-            });
+            }, 10);
+        } else {
+            setDisplayTime(calculateDisplayTime(state));
         }
         return () => {
             interval && clearInterval(interval);
         };
     }, [paused]);
+
+    useEffect(() => {
+        const progress = Math.floor((seconds / 60) * 100);
+        setProgress(progress);
+    }, [seconds]);
+
+    useEffect(() => {
+        setLapItems(generateLapItems(lapData));
+    }, [lapData]);
 
     function toggleStopwatch() {
         setState((state) => {
@@ -91,15 +158,48 @@ const StopwatchPage = () => {
         setState(defaultStopwatchState);
         setIsZero(true);
         setDisplayTime(calculateDisplayTime(defaultStopwatchState));
+        setLapData([]);
+    }
+
+    function shareStopwatch() {}
+
+    function lapStopwatch() {
+        setState((state) => {
+            const newState = {};
+            newState.laps = state.laps || [];
+            newState.laps.push(total);
+            setLapData(calculateLapData(newState.laps));
+            return { ...state, ...newState };
+        });
     }
 
     return (
         <Container
             style={{
-                margin: "16px",
+                marginTop: "16px",
             }}
         >
-            <Typography variant="h3">{`${hours}:${minutes}:${seconds}.${milliseconds}`}</Typography>
+            <Container style={{ textAlign: "center" }}>
+                <Typography
+                    variant="h3"
+                    className={classes.time}
+                    color="primary"
+                >
+                    {textTime}
+                </Typography>
+                <LinearProgress
+                    value={progress}
+                    variant="determinate"
+                    style={{
+                        margin: "auto",
+                        maxWidth: "300px",
+                    }}
+                />
+
+                <Divider style={{ marginTop: "16px" }} />
+            </Container>
+            <Container>{lapItems}</Container>
+            <Container className={classes.spacer}></Container>
             <Container className={classes.controls}>
                 <Grid container align="center" justify="center">
                     <Grid
@@ -128,7 +228,12 @@ const StopwatchPage = () => {
                         </Fab>
                     </Grid>
                     <Grid item xs={4} className={classes.flex}>
-                        {!isZero && <Button>{paused ? "Share" : "Lap"}</Button>}
+                        {!isZero &&
+                            (paused ? (
+                                <Button onClick={shareStopwatch}>Share</Button>
+                            ) : (
+                                <Button onClick={lapStopwatch}>Lap</Button>
+                            ))}
                     </Grid>
                 </Grid>
             </Container>
