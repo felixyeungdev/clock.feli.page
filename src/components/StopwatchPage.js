@@ -167,11 +167,11 @@ const StopwatchPage = () => {
 
     function shareStopwatch() {
         const textTime = generateTextTime(displayTime, true);
-
+        const _lapData = [...lapData].reverse();
         var lapMessage = "";
-        if (lapData.length > 0) {
+        if (_lapData.length > 0) {
             lapMessage = "\nLap time(s):";
-            lapData.forEach((lapItem, i) => {
+            _lapData.forEach((lapItem, i) => {
                 const deltaTime = calculateDisplayTime({
                     paused: true,
                     timed: lapItem.delta,
@@ -183,7 +183,8 @@ const StopwatchPage = () => {
 
         const message = `My time is ${textTime}${lapMessage}`;
         const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
-        window.open(url, "_blank");
+        // window.open(url, "_blank");
+        console.log(message);
     }
 
     function lapStopwatch() {
