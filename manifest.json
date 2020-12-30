@@ -1,6 +1,6 @@
 {
     "short_name": "Clock App",
-    "name": "Clone of Stock Android's Clock App",
+    "name": "Clock",
     "icons": [
         {
             "src": "assets/images/icons/clock.feli.page-512.png",
