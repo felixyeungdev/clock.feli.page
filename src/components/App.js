@@ -87,7 +87,7 @@ function App() {
                 <AppBar
                     color="secondary"
                     elevation="0"
-                    position="static"
+                    position="sticky"
                     className={classes.appbar}
                 >
                     <Toolbar>
