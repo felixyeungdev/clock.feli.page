@@ -48,7 +48,7 @@ function LapDisplay({ index, lap }) {
         >
             <Grid container style={{ textAlign: "center" }}>
                 <Grid item xs={4} className={classes.centerIndex}>
-                    <Typography variant="subtitle">#{index}</Typography>
+                    <Typography variant="subtitle2">#{index}</Typography>
                 </Grid>
                 <Grid item xs={4} className={classes.centerDelta}>
                     <Typography variant="body1">{deltaTextTime}</Typography>

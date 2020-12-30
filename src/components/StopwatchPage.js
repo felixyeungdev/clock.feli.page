@@ -42,12 +42,16 @@ const defaultStopwatchState = {
     paused: true,
 };
 
-export function generateTextTime([hours, minutes, seconds, milliseconds]) {
+export function generateTextTime(
+    [hours, minutes, seconds, milliseconds],
+    bypass
+) {
     const _hours = `${hours < 10 ? "0" : ""}${hours}`;
     const _minutes = `${minutes < 10 ? "0" : ""}${minutes}`;
     const _seconds = `${seconds < 10 ? "0" : ""}${seconds}`;
     const _milliseconds = `${milliseconds < 10 ? "0" : ""}${milliseconds}`;
     var result = `${_hours}:${_minutes}:${_seconds}.${_milliseconds}`;
+    if (bypass) return result;
     if (hours + minutes === 0) {
         result = result.slice(6);
     } else if (hours === 0) {
@@ -161,7 +165,26 @@ const StopwatchPage = () => {
         setLapData([]);
     }
 
-    function shareStopwatch() {}
+    function shareStopwatch() {
+        const textTime = generateTextTime(displayTime, true);
+
+        var lapMessage = "";
+        if (lapData.length > 0) {
+            lapMessage = "\nLap time(s):";
+            lapData.forEach((lapItem, i) => {
+                const deltaTime = calculateDisplayTime({
+                    paused: true,
+                    timed: lapItem.delta,
+                });
+                const deltaTextTime = generateTextTime(deltaTime);
+                lapMessage += `\n${i + 1}. ${deltaTextTime}`;
+            });
+        }
+
+        const message = `My time is ${textTime}${lapMessage}`;
+        const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(url, "_blank");
+    }
 
     function lapStopwatch() {
         setState((state) => {
