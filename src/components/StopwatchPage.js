@@ -92,6 +92,29 @@ function generateLapItems(lapData) {
     });
 }
 
+async function shareStopwatchResult(text) {
+    function shareWithWhatsApp() {
+        const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+        window.open(url, "_blank");
+    }
+    if ("canShare" in navigator) {
+        try {
+            await navigator.share({
+                title: "Stopwatch Result",
+                text: "",
+                url: "https://clock.feli.page",
+            });
+        } catch (error) {
+            console.log(error.toString());
+            if (!error.toString().includes("canceled")) {
+                shareWithWhatsApp();
+            }
+        }
+    } else {
+        shareWithWhatsApp();
+    }
+}
+
 const StopwatchPage = () => {
     const classes = useStyles();
 
@@ -182,8 +205,7 @@ const StopwatchPage = () => {
         }
 
         const message = `My time is ${textTime}${lapMessage}`;
-        const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
-        window.open(url, "_blank");
+        shareStopwatchResult(message);
     }
 
     function lapStopwatch() {
