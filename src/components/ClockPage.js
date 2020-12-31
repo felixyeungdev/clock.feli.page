@@ -4,7 +4,7 @@ import Container from "@material-ui/core/Container";
 import Divider from "@material-ui/core/Divider";
 import Fab from "@material-ui/core/Fab";
 import LanguageIcon from "@material-ui/icons/Language";
-
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import moment from "moment";
 import { makeStyles } from "@material-ui/core/styles";
 import TimezoneDisplay from "./TimezoneDisplay";
@@ -12,6 +12,11 @@ import TimezoneSelect from "./TimezoneSelect";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { Container as DraggableContainer, Draggable } from "react-smooth-dnd";
 import arrayMove from "array-move";
+
+const colors = {
+    red: "#f44336",
+    darkRed: "#ba000d",
+};
 
 const useStyles = makeStyles((theme) => ({
     time: {
@@ -29,6 +34,15 @@ const useStyles = makeStyles((theme) => ({
     centerText: {
         textAlign: "center",
     },
+    removeContainer: {
+        position: "fixed",
+        transform: "TranslateX(-50%)",
+        bottom: "72px",
+        left: "50%",
+        width: "100vw",
+        height: "56px",
+    },
+    timezoneDrag: {},
 }));
 
 function getSimpleTime() {
@@ -44,6 +58,9 @@ function ClockPage() {
     const [date, setDate] = useState("");
     const [showTimezoneSelect, setShowTimezoneSelect] = useState(false);
     const [userTimezones, setUserTimezones] = useLocalStorage("timezones", []);
+    const [isDraggingTimezone, setIsDraggingTimezone] = useState(() => false);
+    const [isDeleteReady, setIsDeleteReady] = useState(() => false);
+
     function updateClock() {
         setTime(getSimpleTime());
         setDate(getSimpleDate());
@@ -64,7 +81,12 @@ function ClockPage() {
     }
 
     function onDrop({ removedIndex, addedIndex }) {
-        setUserTimezones((items) => arrayMove(items, removedIndex, addedIndex));
+        console.log({ removedIndex, addedIndex });
+        setUserTimezones((items) => {
+            const newItems = arrayMove(items, removedIndex, addedIndex || 0);
+            if (addedIndex === null) newItems.shift();
+            return newItems;
+        });
     }
 
     useEffect(() => {
@@ -93,7 +115,15 @@ function ClockPage() {
                 <Divider style={{ marginTop: "16px" }} />
             </Container>
             <Container>
-                <DraggableContainer onDrop={onDrop} dragBeginDelay={200}>
+                <DraggableContainer
+                    lockAxis="y"
+                    groupName="timezone"
+                    onDrop={onDrop}
+                    dragBeginDelay={200}
+                    onDragStart={(e) => setIsDraggingTimezone(true)}
+                    onDragEnd={() => setIsDraggingTimezone(false)}
+                    dragClass={classes.timezoneDrag}
+                >
                     {userTimezones.map((timezone) => {
                         return (
                             <Draggable key={timezone}>
@@ -108,13 +138,36 @@ function ClockPage() {
                 <TimezoneDisplay timezone="Asia/Yangon" /> */}
                 </DraggableContainer>
             </Container>
+            <Container
+                className={classes.removeContainer}
+                style={{
+                    zIndex: isDraggingTimezone && "500",
+                }}
+            >
+                <DraggableContainer
+                    groupName="timezone"
+                    onDragEnter={() => setIsDeleteReady(true)}
+                    onDragLeave={() => setIsDeleteReady(false)}
+                    onDragEnd={() => setIsDeleteReady(false)}
+                    className={classes.removeContainer}
+                    style={{
+                        width: "100%",
+                        height: "56px",
+                    }}
+                ></DraggableContainer>
+            </Container>
             <Fab
                 color="primary"
                 aria-label="add"
                 className={classes.fab}
                 onClick={handleAddTimezoneIntent}
+                style={{
+                    background:
+                        isDraggingTimezone &&
+                        (isDeleteReady ? colors.darkRed : colors.red),
+                }}
             >
-                <LanguageIcon />
+                {isDraggingTimezone ? <DeleteOutlineIcon /> : <LanguageIcon />}
             </Fab>
             <TimezoneSelect
                 open={showTimezoneSelect}
