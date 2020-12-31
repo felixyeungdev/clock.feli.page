@@ -68,6 +68,7 @@ function ClockPage() {
     }
 
     useEffect(() => {
+        updateClock();
         var interval = setInterval(updateClock, 10);
         return () => clearInterval(interval);
     }, []);
