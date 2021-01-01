@@ -16,9 +16,10 @@ import useLocalStorage from "../hooks/useLocalStorage";
 import DeleteOutlineOutlined from "@material-ui/icons/DeleteOutlineOutlined";
 import IconButton from "@material-ui/core/IconButton";
 import { generateTextTime, calculateDisplayTime } from "./StopwatchPage";
-import * as Tone from "tone";
+import "./TimerPage.scss";
+// import * as Tone from "tone";
 
-const synth = new Tone.Synth().toDestination();
+// const synth = new Tone.Synth().toDestination();
 
 const calculateDisplayTimeWrapper = (state) => {
     var timed = 0;
@@ -42,7 +43,6 @@ const useStyles = makeStyles((theme) => ({
         bottom: "56px",
         left: "50%",
         zIndex: "50",
-        paddingTop: "64px",
         paddingBottom: "16px",
         // background:
         //     "linear-gradient(0deg, rgba(17,17,17,1) 60%, rgba(17,17,17,0) 100%)",
@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     },
     digitParent: {
         textAlign: "center",
-        marginTop: "12px",
+        // marginTop: "12px",
         padding: "8px",
     },
     digit: {
@@ -134,6 +134,7 @@ const TimerPage = () => {
 
     function handleTerminate() {
         setState(defaultTimerState);
+        setProgress(100);
     }
 
     function handleStart() {
@@ -183,10 +184,9 @@ const TimerPage = () => {
     }
 
     function timesUpRing() {
-        console.log("ring");
-        const now = Tone.now();
-        synth.triggerAttack("C4", now);
-        synth.triggerRelease(now + 1);
+        // const now = Tone.now();
+        // synth.triggerAttack("C4", now);
+        // synth.triggerRelease(now + 1);
     }
 
     function stopRing() {
@@ -196,7 +196,6 @@ const TimerPage = () => {
 
     useEffect(() => {
         var interval;
-        console.log({ timesUp });
         if (timesUp) {
             timesUpRing();
             interval = setInterval(() => {
@@ -223,6 +222,7 @@ const TimerPage = () => {
                 if (timed === 0 && !timesUp) {
                     setTimesUp(true);
                 }
+                setProgress(Math.floor((timed / state.total) * 100));
                 setDisplayTime([hours, minutes, seconds, milliseconds, timed]);
             }, 10);
         } else {
@@ -248,7 +248,7 @@ const TimerPage = () => {
                 ></div>
                 <Typography
                     variant="h3"
-                    className={classes.time}
+                    className={[classes.time, timesUp && "blinking"].join(" ")}
                     color="primary"
                 >
                     {textTime}
