@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://src/components/TimerPage.scss"],"names":[],"mappings":"AAAA,UACI,4CAAA,CAAA,oCAAqC,CACxC,2BAGG,IACI,SAAU,CAAA,CAJjB,mBAGG,IACI,SAAU,CAAA","file":"main.7f1ee7d2.chunk.css","sourcesContent":[".blinking {\n    animation: blinker 1s linear infinite;\n}\n\n@keyframes blinker {\n    50% {\n        opacity: 0;\n    }\n}\n"]}

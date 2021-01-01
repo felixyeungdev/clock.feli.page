@@ -1,0 +1,2 @@
+.blinking{-webkit-animation:blinker 1s linear infinite;animation:blinker 1s linear infinite}@-webkit-keyframes blinker{50%{opacity:0}}@keyframes blinker{50%{opacity:0}}
+/*# sourceMappingURL=main.7f1ee7d2.chunk.css.map */
