@@ -6,6 +6,7 @@ import Divider from "@material-ui/core/Divider";
 import Button from "@material-ui/core/Button";
 import Fab from "@material-ui/core/Fab";
 import Fade from "@material-ui/core/Fade";
+import Zoom from "@material-ui/core/Zoom";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import LapDisplay from "./LapDisplay";
 import PlayArrowOutlinedIcon from "@material-ui/icons/PlayArrowOutlined";
@@ -15,13 +16,16 @@ import useLocalStorage from "../hooks/useLocalStorage";
 import DeleteOutlineOutlined from "@material-ui/icons/DeleteOutlineOutlined";
 import IconButton from "@material-ui/core/IconButton";
 import { generateTextTime, calculateDisplayTime } from "./StopwatchPage";
+import * as Tone from "tone";
+
+const synth = new Tone.Synth().toDestination();
 
 const calculateDisplayTimeWrapper = (state) => {
     var timed = 0;
     if (!state.paused) {
         timed = state.target - Date.now();
     } else {
-        timed = state.remaining;
+        timed = state.remaining || 0;
     }
     if (timed < 0) timed = 0;
     const _state = {
@@ -96,18 +100,19 @@ const TimerPage = () => {
     );
 
     const hasTimer = state.target && state.target !== null;
-    console.log(state);
-    console.log(state.target !== null);
     const { paused } = state;
     const [canStart, setCanStart] = useState(() => true);
     const [selectedDigits, setSelectedDigits] = useState(() => array6Zeros);
     const [progress, setProgress] = useState(0);
+    const [timesUp, setTimesUp] = useState(false);
 
     const [displayTime, setDisplayTime] = useState(() => {
         return calculateDisplayTimeWrapper(state);
     });
 
-    const digitsInMs = calculateTotalTimeFromSixInMilliseconds(selectedDigits);
+    const [digitsInMs, setDigitsInMs] = useState(() =>
+        calculateTotalTimeFromSixInMilliseconds(selectedDigits)
+    );
 
     const textTime = renderTextTime();
 
@@ -130,6 +135,7 @@ const TimerPage = () => {
     function handleTerminate() {
         setState(defaultTimerState);
     }
+
     function handleStart() {
         const now = Date.now();
         const targetTime = now + digitsInMs;
@@ -141,6 +147,7 @@ const TimerPage = () => {
             total: digitsInMs,
         };
         setSelectedDigits(array6Zeros);
+        setDigitsInMs(0);
         setState(newState);
     }
 
@@ -167,21 +174,56 @@ const TimerPage = () => {
     }
 
     function handleDigitPressed(num) {
-        console.log(`Num ${num} pressed`);
         setSelectedDigits((selectedDigits) => {
             const newDigits = [...array6Zeros, ...selectedDigits, num];
             const filtered = newDigits.slice(Math.max(newDigits.length - 6, 1));
-            console.log(filtered);
+            setDigitsInMs(calculateTotalTimeFromSixInMilliseconds(filtered));
             return filtered;
         });
     }
+
+    function timesUpRing() {
+        console.log("ring");
+        const now = Tone.now();
+        synth.triggerAttack("C4", now);
+        synth.triggerRelease(now + 1);
+    }
+
+    function stopRing() {
+        setTimesUp(false);
+        handleTerminate();
+    }
+
+    useEffect(() => {
+        var interval;
+        console.log({ timesUp });
+        if (timesUp) {
+            timesUpRing();
+            interval = setInterval(() => {
+                timesUpRing();
+            }, 1000);
+        }
+        return () => {
+            interval && clearInterval(interval);
+        };
+    }, [timesUp]);
 
     useEffect(() => {
         var interval;
         if (!paused) {
             setDisplayTime(calculateDisplayTimeWrapper(state));
             interval = setInterval(() => {
-                setDisplayTime(calculateDisplayTimeWrapper(state));
+                const [
+                    hours,
+                    minutes,
+                    seconds,
+                    milliseconds,
+                    timed,
+                ] = calculateDisplayTimeWrapper(state);
+                if (timed === 0 && !timesUp) {
+                    setTimesUp(true);
+                }
+                setDisplayTime([hours, minutes, seconds, milliseconds, timed]);
             }, 10);
         } else {
             setDisplayTime(calculateDisplayTimeWrapper(state));
@@ -222,7 +264,20 @@ const TimerPage = () => {
 
                 <Divider style={{ marginTop: "16px" }} />
             </Container>
-
+            <Container
+                style={{
+                    display: "flex",
+                    width: "100%",
+                    justifyContent: "center",
+                    marginTop: "16px",
+                }}
+            >
+                <Fade in={timesUp}>
+                    <Button onClick={stopRing} size="large">
+                        Stop
+                    </Button>
+                </Fade>
+            </Container>
             <Fade in={!hasTimer}>
                 <Container>
                     <Grid container>
@@ -253,7 +308,7 @@ const TimerPage = () => {
 
             <Container className={classes.spacer}></Container>
             <Fade
-                in={hasTimer}
+                in={hasTimer && !timesUp}
                 style={{
                     zIndex: hasTimer ? 500 : 250,
                 }}
