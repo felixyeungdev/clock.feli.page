@@ -57,7 +57,11 @@ export function generateTextTime(
     } else if (hours === 0) {
         result = result.slice(3);
     } else if (hours > 1) {
-        result = result.slice(0, 8);
+        if (hours > 99) {
+            result = result.slice(0, result.length - 3);
+        } else {
+            result = result.slice(0, 8);
+        }
     }
     return result;
 }
@@ -70,7 +74,7 @@ export const calculateDisplayTime = (state) => {
     var milliseconds = parseInt((timed % 1000) / 10),
         seconds = Math.floor((timed / 1000) % 60),
         minutes = Math.floor((timed / (1000 * 60)) % 60),
-        hours = Math.floor((timed / (1000 * 60 * 60)) % 24);
+        hours = Math.floor(timed / (1000 * 60 * 60));
 
     return [hours, minutes, seconds, milliseconds, timed];
 };
