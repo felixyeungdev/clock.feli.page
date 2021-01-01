@@ -40,8 +40,8 @@ const useStyles = makeStyles((theme) => ({
         zIndex: "50",
         paddingTop: "64px",
         paddingBottom: "16px",
-        background:
-            "linear-gradient(0deg, rgba(17,17,17,1) 60%, rgba(17,17,17,0) 100%)",
+        // background:
+        //     "linear-gradient(0deg, rgba(17,17,17,1) 60%, rgba(17,17,17,0) 100%)",
     },
     flex: {
         display: "flex",
@@ -252,10 +252,15 @@ const TimerPage = () => {
             </Fade>
 
             <Container className={classes.spacer}></Container>
-            <Container className={classes.controls}>
-                <Grid container align="center" justify="center">
-                    <Grid item xs={12}>
-                        {hasTimer && (
+            <Fade
+                in={hasTimer}
+                style={{
+                    zIndex: hasTimer ? 500 : 250,
+                }}
+            >
+                <Container className={classes.controls}>
+                    <Grid container align="center" justify="center">
+                        <Grid item xs={12}>
                             <Fab
                                 color="primary"
                                 aria-label="delete"
@@ -264,19 +269,6 @@ const TimerPage = () => {
                             >
                                 <DeleteOutlineOutlined />
                             </Fab>
-                        )}
-                        {!hasTimer && digitsInMs !== 0 && (
-                            <Fab
-                                color="primary"
-                                aria-label="start"
-                                onClick={handleStart}
-                                className={classes.fab}
-                            >
-                                <PlayArrowOutlinedIcon />
-                            </Fab>
-                        )}
-
-                        {hasTimer && (
                             <Fab
                                 color="primary"
                                 aria-label="add"
@@ -289,10 +281,26 @@ const TimerPage = () => {
                                     <PauseOutlinedIcon />
                                 )}
                             </Fab>
-                        )}
+                        </Grid>
                     </Grid>
-                </Grid>
-            </Container>
+                </Container>
+            </Fade>
+            <Fade in={!hasTimer && digitsInMs !== 0}>
+                <Container className={classes.controls}>
+                    <Grid container align="center" justify="center">
+                        <Grid item xs={12}>
+                            <Fab
+                                color="primary"
+                                aria-label="start"
+                                onClick={handleStart}
+                                className={classes.fab}
+                            >
+                                <PlayArrowOutlinedIcon />
+                            </Fab>
+                        </Grid>
+                    </Grid>
+                </Container>
+            </Fade>
         </Container>
     );
 };
